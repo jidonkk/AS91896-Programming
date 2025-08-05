@@ -53,14 +53,14 @@ for i in range(len(cards)):
     card_rects.append(rect)
 
 def draw_board():
-    window.fill((250, 250, 250))
+    window.fill((200, 200, 250))
     for i, rect in enumerate(card_rects):
         if matched[i]:
             pygame.draw.rect(window, (200, 255, 200), rect)
         elif revealed[i]:
             pygame.draw.rect(window, (255, 255, 200), rect)
         else:
-            pygame.draw.rect(window, (200, 200, 255), rect)
+            pygame.draw.rect(window, (255, 255, 255), rect)
 
         pygame.draw.rect(window, (0, 0, 0), rect, 2)
         if revealed[i] or matched[i]:
