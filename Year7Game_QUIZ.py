@@ -35,21 +35,28 @@ input_text, feedback = "", ""
 
 running = True
 while running:
-    window.fill((255, 255, 255))  # White background
+    window.fill((200, 220, 255))  # Light blue background
 
     if current_index < len(questions):
         num, ch = questions[current_index]
-        window.blit(font.render(f"What is {ch} in English?", True, (0, 0, 0)), (150, 80))
 
-        pygame.draw.rect(window, (200, 220, 255), (200, 150, 200, 50))
-        window.blit(font.render(input_text, True, (0, 0, 0)), (210, 160))
+        # Displaying the instructions
+        instruction_text = small_font.render("Type in numbers to answer, then press Enter", True, (0, 0, 0))
+        window.blit(instruction_text, (180, 180))
+
+        # Displaying the question
+        window.blit(font.render(f"What is '{ch}' in English?", True, (0, 0, 0)), (200, 230))
+
+        # Input box for the answer
+        pygame.draw.rect(window, (255, 255, 255), (300, 290, 200, 50))
+        window.blit(font.render(input_text, True, (0, 0, 0)), (310, 300))
 
         if feedback:
             colour = (0, 128, 0) if feedback == "Correct!" else (255, 0, 0)
-            window.blit(small_font.render(feedback, True, colour), (200, 220))
+            window.blit(small_font.render(feedback, True, colour), (300, 370))
 
     else:
-        window.blit(font.render(f"Quiz Finished! Score: {score}/10", True, (0, 0, 0)), (120, 150))
+        window.blit(font.render(f"Quiz Finished! Score: {score}/10", True, (0, 0, 0)), (200, 250))
 
     pygame.display.flip()
 
