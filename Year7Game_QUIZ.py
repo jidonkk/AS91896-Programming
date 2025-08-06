@@ -17,8 +17,8 @@ window = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Chinese Quiz")
 
 # Fonts
-font = pygame.font.SysFont(None, 48)
-small_font = pygame.font.SysFont(None, 36)
+font = pygame.font.SysFont("Arial", 48)
+small_font = pygame.font.SysFont("Arial", 36)
 
 clock = pygame.time.Clock()
 
@@ -42,13 +42,13 @@ while running:
 
         # Displaying the instructions
         instruction_text = small_font.render("Type in numbers to answer, then press Enter", True, (0, 0, 0))
-        window.blit(instruction_text, (180, 180))
+        window.blit(instruction_text, (100, 180))
 
         # Displaying the question
         window.blit(font.render(f"What is '{ch}' in English?", True, (0, 0, 0)), (200, 230))
 
         # Input box for the answer
-        pygame.draw.rect(window, (255, 255, 255), (300, 290, 200, 50))
+        pygame.draw.rect(window, (255, 255, 255), (300, 290, 200, 70))
         window.blit(font.render(input_text, True, (0, 0, 0)), (310, 300))
 
         if feedback:
