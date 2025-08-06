@@ -1,1 +1,1 @@
-'''Game menu - Not with card game or quiz'''
+'''Game menu - Leads to Quiz, Card game, and exiting the programe'''
