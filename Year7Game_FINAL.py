@@ -1,7 +1,10 @@
-'''Chinese Numbers Learning Games, Year 7 Game Project
+'''
+Chinese Numbers Learning Games, Year 7 Game Project
 Includes:
+- Main Menu
 - Quiz Game
-- Matching Cards Game'''
+- Matching Cards Game
+'''
 
 # Importing needed libraries
 import pygame
@@ -25,20 +28,23 @@ small_font = pygame.font.SysFont(None, 36)
 
 clock = pygame.time.Clock()
 
-# Common list of Chinese Numbers
+# Common list of Chinese Numbers - This is used across both games
 chinese_numbers = {1: "yī", 2: "èr", 3: "sān", 4: "sì", 5: "wǔ",
     6: "liù", 7: "qī", 8: "bā", 9: "jiǔ", 10: "shí",
     11: "shí yī", 12: "shí èr", 13: "shí sān", 14: "shí sì", 15: "shí wǔ",
     16: "shí liù", 17: "shí qī", 18: "shí bā", 19: "shí jiǔ", 20: "èr shí"
 }
 
-# Menu
+# Main Menu Function
 def menu():
     while True:
         window.fill((150, 200, 250))  # Light blue background
+
+        # Displaying the title
         title = font.render("Chinese Numbers Games", True, (0, 0, 0))
         window.blit(title, (160, 100))
 
+        # Defines the buttons for each option/action
         mouse_pos = pygame.mouse.get_pos()
         buttons = [
             {"label": "Quiz", "pos": (220, 200), "action": run_quiz},
@@ -46,34 +52,40 @@ def menu():
             {"label": "Exit", "pos": (220, 400), "action": quit_game},
         ]
 
+        # Drawing the buttons
         for button in buttons:
             rect = pygame.Rect(button["pos"][0], button["pos"][1], 300, 70)
+
+            # Changes button colour when hovered over
             colour = (100, 150, 255) if rect.collidepoint(mouse_pos) else (255, 255, 255)
             pygame.draw.rect(window, colour, rect)
             pygame.draw.rect(window, (0, 0, 0), rect, 3)
             text = small_font.render(button["label"], True, (0, 0, 0))
             text_rect = text.get_rect(center=rect.center)
             window.blit(text, text_rect)
-            button["rect"] = rect  # Store the rect for later use
+            button["rect"] = rect  # Save the rect to use for click detection
 
+        # Handle events - clicking buttons and quitting
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for button in buttons:
                     if button["rect"].collidepoint(event.pos):
-                        button["action"]()  # Call the action associated with the button
+                        button["action"]()  # Calls the function linked to the button
 
         pygame.display.flip()
         clock.tick(60)
 
-# Quit function
+# Quit function - Quits the game
 def quit_game():
     pygame.quit()
     sys.exit()
 
-# Quiz Game
+# Quiz Game - Function that runs the quiz
 def run_quiz():
+    
+    # Selects 10 random chinese numbers for the quiz
     questions = random.sample(list(chinese_numbers.items()), 10)
     current_index = 0
     score = 0
@@ -82,17 +94,21 @@ def run_quiz():
 
     while True:
         window.fill((200, 220, 255))
+
         if current_index < len(questions):
+            # Show question and input box
             num, ch = questions[current_index]
             window.blit(small_font.render("Type in numbers to answer, then press Enter", True, (0, 0, 0)), (100, 180))
             window.blit(font.render(f"What is '{ch}' in English?", True, (0, 0, 0)), (200, 230))
             pygame.draw.rect(window, (255, 255, 255), (300, 290, 200, 70))
             window.blit(font.render(input_text, True, (0, 0, 0)), (310, 300))
 
+            # Shows feedback on answer - if its correct or wrong
             if feedback:
                 color = (0, 128, 0) if feedback == "Correct!" else (255, 0, 0)
                 window.blit(small_font.render(feedback, True, color), (300, 370))
         else:
+            # Quiz finished screen - shows the final score then redirects to the menu
             window.blit(font.render(f"Quiz Finished! Score: {score}/10", True, (0, 0, 0)), (200, 250))
             window.blit(small_font.render("Click anywhere to return to menu", True, (0, 0, 0)), (200, 320))
 
@@ -102,9 +118,10 @@ def run_quiz():
             if event.type == pygame.QUIT:
                 quit_game()
             elif event.type == pygame.MOUSEBUTTONDOWN and current_index >= len(questions):
-                return
+                return  # Return to menu when finished
             elif event.type == pygame.KEYDOWN and current_index < len(questions):
                 if event.key == pygame.K_RETURN:
+                    # Check the answer
                     if input_text.strip().isdigit() and int(input_text.strip()) == num:
                         feedback = "Correct!"
                         score += 1
@@ -119,13 +136,15 @@ def run_quiz():
 
         clock.tick(30)
 
-# Matching Cards Game
+# Matching Cards Game - Function that runs the cards game
 def run_cards():
+
+    # Picks 6 random pairs of numbers (12 cards total)
     pairs = random.sample(list(chinese_numbers.items()), 6)
     cards = []
     for num, ch in pairs:
-        cards.append((str(num), num))
-        cards.append((ch, num))
+        cards.append((str(num), num))  # English number card
+        cards.append((ch, num))  # Chinese pinyin card
     random.shuffle(cards)
 
     CARD_WIDTH, CARD_HEIGHT = 120, 80
@@ -136,6 +155,7 @@ def run_cards():
     first_selection = None
     pause_time = 0
 
+    # Create card positions, each card is a rectangle in a grid layout
     for i in range(len(cards)):
         row = i // GRID_COLS
         col = i % GRID_COLS
@@ -143,42 +163,51 @@ def run_cards():
         card_rects.append(rect)
 
     while True:
-        window.fill((200, 200, 250))
+        window.fill((200, 200, 250))  # Background
+
+        # Drawing the cards 
         for i, rect in enumerate(card_rects):
             if matched[i]:
-                pygame.draw.rect(window, (200, 255, 200), rect)
+                pygame.draw.rect(window, (200, 255, 200), rect)  # Card turns green if matched
             elif revealed[i]:
-                pygame.draw.rect(window, (255, 255, 200), rect)
+                pygame.draw.rect(window, (255, 255, 200), rect)  # Card turns yellow if revealed
             else:
-                pygame.draw.rect(window, (255, 255, 255), rect)
+                pygame.draw.rect(window, (255, 255, 255), rect)  # Card is white if facing down
             pygame.draw.rect(window, (0, 0, 0), rect, 2)
+
+            # Displays the card text if revealed or matched
             if revealed[i] or matched[i]:
                 text = small_font.render(str(cards[i][0]), True, (0, 0, 0))
                 text_rect = text.get_rect(center=rect.center)
                 window.blit(text, text_rect)
 
+        # Shows message when all pairs are matched
         if all(matched):
             window.blit(font.render("You matched all pairs!", True, (0, 100, 0)), (200, 420))
             window.blit(small_font.render("Click anywhere to return to menu", True, (0, 0, 0)), (200, 480))
 
         pygame.display.flip()
 
+        # Pause after two cards are selected
         if pause_time > 0 and pygame.time.get_ticks() - pause_time > 1000:
             if cards[first_selection][1] != cards[second_selection][1]:
+                # If not a match, hide the cards
                 revealed[first_selection] = False
                 revealed[second_selection] = False
             else:
+                # Match found, mark as matched
                 matched[first_selection] = True
                 matched[second_selection] = True
             pause_time = 0
             first_selection = None
 
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if all(matched):
-                    return
+                    return  # Return to menu when finished 
                 for i, rect in enumerate(card_rects):
                     if rect.collidepoint(event.pos) and not revealed[i] and not matched[i] and pause_time == 0:
                         revealed[i] = True
@@ -192,5 +221,3 @@ def run_cards():
 
 # Starting the game menu
 menu()
-
-
