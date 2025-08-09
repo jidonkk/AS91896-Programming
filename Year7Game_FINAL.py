@@ -100,6 +100,17 @@ def quit_game():
     pygame.quit()
     sys.exit()
 
+# Back button function - Draws back button on the screen when called
+def draw_back_button(mouse_pos):
+    back_rect = pygame.Rect(20, 20, 120, 50)
+    colour = (119, 221, 119) if back_rect.collidepoint(mouse_pos) else (255, 255, 255)
+    pygame.draw.rect(window, colour, back_rect)
+    pygame.draw.rect(window, (0, 0, 0), back_rect, 3)
+    back_text = small_font.render("Back", True, (0, 0, 0))
+    back_text_rect = back_text.get_rect(center=back_rect.center)
+    window.blit(back_text, back_text_rect)
+    return back_rect
+
 # Quiz Game - Function that runs the quiz
 def run_quiz():
     
@@ -112,6 +123,7 @@ def run_quiz():
 
     while True:
         window.blit(quiz_bg, (0, 0)) # Background
+        mouse_pos = pygame.mouse.get_pos() # Finds mouse position
 
         if current_index < len(questions):
             # Show question and input box
@@ -125,18 +137,23 @@ def run_quiz():
             if feedback:
                 color = (144, 238, 144) if feedback == "Correct!" else (255, 0, 0)
                 window.blit(small_font.render(feedback, True, color), (300, 370))
+
+            back_button_rect = draw_back_button(mouse_pos)  # Draws back button
+
         else:
             # Quiz finished screen - shows the final score then redirects to the menu
             window.blit(font.render(f"Quiz Finished! Score: {score}/10", True, (0, 0, 0)), (200, 250))
             window.blit(small_font.render("Click anywhere to return to menu", True, (0, 0, 0)), (200, 320))
+            back_button_rect = None # No back button needed when quiz is finished
 
         pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
-            elif event.type == pygame.MOUSEBUTTONDOWN and current_index >= len(questions):
-                return  # Return to menu when finished
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if current_index >= len(questions) or (back_button_rect and back_button_rect.collidepoint(event.pos)):
+                    return  # Return to menu if quiz is finished or back button is clicked
             elif event.type == pygame.KEYDOWN and current_index < len(questions):
                 if event.key == pygame.K_RETURN:
                     # Check the answer
@@ -182,6 +199,7 @@ def run_cards():
 
     while True:
         window.blit(cards_bg, (0, 0))  # Background
+        mouse_pos = pygame.mouse.get_pos()  # Finds mouse position
 
         # Drawing the cards 
         for i, rect in enumerate(card_rects):
@@ -199,8 +217,12 @@ def run_cards():
                 text_rect = text.get_rect(center=rect.center)
                 window.blit(text, text_rect)
 
+        if not all(matched):
+            back_button_rect = draw_back_button(mouse_pos)  # Draws back button while all cards aren't matched
+
         # Shows message when all pairs are matched
         if all(matched):
+            back_button_rect = None  # No back button needed when all pairs are matched
             window.blit(font.render("You matched all pairs!", True, (255, 255, 255)), (200, 420))
             window.blit(small_font.render("Click anywhere to return to menu", True, (0, 0, 0)), (200, 480))
 
@@ -226,6 +248,8 @@ def run_cards():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if all(matched):
                     return  # Return to menu when finished 
+                if back_button_rect and back_button_rect.collidepoint(event.pos):
+                    return  # Return to menu if back button is clicked
                 for i, rect in enumerate(card_rects):
                     if rect.collidepoint(event.pos) and not revealed[i] and not matched[i] and pause_time == 0:
                         revealed[i] = True
