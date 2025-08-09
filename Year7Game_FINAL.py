@@ -41,6 +41,11 @@ button_sound.set_volume(0.3)
 writing_sound.set_volume(0.5)
 cardflip_sound.set_volume(0.5)
 
+# Setting up background music
+pygame.mixer.music.load("JBackground_music.mp3")
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(-1)  # Loop the background music
+
 # Window dimensions
 screen_width = 800
 screen_height = 600
@@ -64,6 +69,7 @@ chinese_numbers = {1: "yī", 2: "èr", 3: "sān", 4: "sì", 5: "wǔ",
 
 # Main Menu Function
 def menu():
+    pygame.mixer.music.play(-1, fade_ms=2000)  # Start background music with fade-in effect
     while True:
         window.blit(menu_bg, (0, 0))  # Background
 
@@ -131,6 +137,8 @@ def run_quiz():
     input_text = ""
     feedback = ""
 
+    pygame.mixer.music.fadeout(2000)  # Fade out background music for quiz
+
     while True:
         window.blit(quiz_bg, (0, 0)) # Background
         mouse_pos = pygame.mouse.get_pos() # Finds mouse position
@@ -165,6 +173,7 @@ def run_quiz():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if current_index >= len(questions) or (back_button_rect and back_button_rect.collidepoint(event.pos)):
                     button_sound.play()
+                    pygame.mixer.music.play(-1, fade_ms=2000)  # Restart background music
                     return  # Return to menu if quiz is finished or back button is clicked
                 
             elif event.type == pygame.KEYDOWN and current_index < len(questions):
@@ -210,6 +219,8 @@ def run_cards():
         col = i % GRID_COLS
         rect = pygame.Rect(100 + col * (CARD_WIDTH + 20), 100 + row * (CARD_HEIGHT + 20), CARD_WIDTH, CARD_HEIGHT)
         card_rects.append(rect)
+
+    pygame.mixer.music.fadeout(2000)  # Fade out background music for cards game
 
     while True:
         window.blit(cards_bg, (0, 0))  # Background
@@ -268,10 +279,12 @@ def run_cards():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if all(matched):
                     button_sound.play() # Play sound when going back to menu
+                    pygame.mixer.music.play(-1, fade_ms=2000)  # Restart background music
                     return  # Return to menu when finished 
                 
                 if back_button_rect and back_button_rect.collidepoint(event.pos):
                     button_sound.play()  # Play sound when back button is clicked
+                    pygame.mixer.music.play(-1, fade_ms=2000)  # Restart background music
                     return  # Return to menu if back button is clicked
                 
                 for i, rect in enumerate(card_rects):
