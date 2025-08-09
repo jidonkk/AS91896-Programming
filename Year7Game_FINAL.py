@@ -103,7 +103,7 @@ def quit_game():
 # Back button function - Draws back button on the screen when called
 def draw_back_button(mouse_pos):
     back_rect = pygame.Rect(20, 20, 120, 50)
-    colour = (119, 221, 119) if back_rect.collidepoint(mouse_pos) else (255, 255, 255)
+    colour = (80, 200, 120) if back_rect.collidepoint(mouse_pos) else (255, 255, 255)
     pygame.draw.rect(window, colour, back_rect)
     pygame.draw.rect(window, (0, 0, 0), back_rect, 3)
     back_text = small_font.render("Back", True, (0, 0, 0))
@@ -219,6 +219,12 @@ def run_cards():
 
         if not all(matched):
             back_button_rect = draw_back_button(mouse_pos)  # Draws back button while all cards aren't matched
+
+            # Shows instructions while cards aren't matched
+            instruction_text = small_font.render("Flip over two cards at a time to find matching English number", True, (255, 255, 255))
+            window.blit(instruction_text, (50, 430))
+            instruction_text2 = small_font.render("and pinyin pairs.", True, (255, 255, 255)) # Second line of instructions because it is too long
+            window.blit(instruction_text2, (50, 460))
 
         # Shows message when all pairs are matched
         if all(matched):
