@@ -32,6 +32,15 @@ menu_bg = pygame.transform.scale(menu_bg, (800, 600))
 quiz_bg = pygame.transform.scale(quiz_bg, (800, 600))
 cardback_image = pygame.transform.scale(cardback_image, (120, 80))
 
+# Loading up sound effects
+button_sound = pygame.mixer.Sound("button_click.wav")
+writing_sound = pygame.mixer.Sound("writing_sound.mp3")
+cardflip_sound = pygame.mixer.Sound("card_flip.ogg")
+
+button_sound.set_volume(0.3)
+writing_sound.set_volume(0.5)
+cardflip_sound.set_volume(0.5)
+
 # Window dimensions
 screen_width = 800
 screen_height = 600
@@ -90,6 +99,7 @@ def menu():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for button in buttons:
                     if button["rect"].collidepoint(event.pos):
+                        button_sound.play()  # Play sound when button is clicked
                         button["action"]()  # Calls the function linked to the button
 
         pygame.display.flip()
@@ -128,7 +138,7 @@ def run_quiz():
         if current_index < len(questions):
             # Show question and input box
             num, ch = questions[current_index]
-            window.blit(small_font.render("Type in numbers to answer, then press Enter", True, (0, 0, 0)), (100, 180))
+            window.blit(small_font.render("Type in numbers to answer, then press Enter.", True, (0, 0, 0)), (100, 180))
             window.blit(font.render(f"What is '{ch}' in English?", True, (0, 0, 0)), (200, 230))
             pygame.draw.rect(window, (255, 255, 255), (300, 290, 200, 70))
             window.blit(font.render(input_text, True, (0, 0, 0)), (310, 300))
@@ -151,9 +161,12 @@ def run_quiz():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if current_index >= len(questions) or (back_button_rect and back_button_rect.collidepoint(event.pos)):
+                    button_sound.play()
                     return  # Return to menu if quiz is finished or back button is clicked
+                
             elif event.type == pygame.KEYDOWN and current_index < len(questions):
                 if event.key == pygame.K_RETURN:
                     # Check the answer
@@ -167,6 +180,7 @@ def run_quiz():
                 elif event.key == pygame.K_BACKSPACE:
                     input_text = input_text[:-1]
                 elif event.key >= pygame.K_0 and event.key <= pygame.K_9:
+                    writing_sound.play()  # Play sound when typing
                     input_text += chr(event.key)
 
         clock.tick(30)
@@ -253,11 +267,16 @@ def run_cards():
                 quit_game()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if all(matched):
+                    button_sound.play() # Play sound when going back to menu
                     return  # Return to menu when finished 
+                
                 if back_button_rect and back_button_rect.collidepoint(event.pos):
+                    button_sound.play()  # Play sound when back button is clicked
                     return  # Return to menu if back button is clicked
+                
                 for i, rect in enumerate(card_rects):
                     if rect.collidepoint(event.pos) and not revealed[i] and not matched[i] and pause_time == 0:
+                        cardflip_sound.play()  # Play sound when card is flipped
                         revealed[i] = True
                         if first_selection is None:
                             first_selection = i
