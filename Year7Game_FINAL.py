@@ -14,6 +14,24 @@ import sys
 # Initialising pygame
 pygame.init()
 
+# Loading the icon for the game
+icon = pygame.image.load("icon.png")
+pygame.display.set_icon(icon)
+
+# Loading the background images
+cards_bg = pygame.image.load("cards_background2.webp")
+menu_bg = pygame.image.load("menu_background.jpg!sw800")
+quiz_bg = pygame.image.load("quiz_background.jpg")
+
+# Loading image for the cards
+cardback_image = pygame.image.load("card_back.png")
+
+# Scaling images to fit window size (and card size)
+cards_bg = pygame.transform.scale(cards_bg, (800, 600))
+menu_bg = pygame.transform.scale(menu_bg, (800, 600))
+quiz_bg = pygame.transform.scale(quiz_bg, (800, 600))
+cardback_image = pygame.transform.scale(cardback_image, (120, 80))
+
 # Window dimensions
 screen_width = 800
 screen_height = 600
@@ -38,7 +56,7 @@ chinese_numbers = {1: "yī", 2: "èr", 3: "sān", 4: "sì", 5: "wǔ",
 # Main Menu Function
 def menu():
     while True:
-        window.fill((150, 200, 250))  # Light blue background
+        window.blit(menu_bg, (0, 0))  # Background
 
         # Displaying the title
         title = font.render("Chinese Numbers Games", True, (0, 0, 0))
@@ -57,7 +75,7 @@ def menu():
             rect = pygame.Rect(button["pos"][0], button["pos"][1], 300, 70)
 
             # Changes button colour when hovered over
-            colour = (100, 150, 255) if rect.collidepoint(mouse_pos) else (255, 255, 255)
+            colour = (119, 221, 119) if rect.collidepoint(mouse_pos) else (255, 255, 255)
             pygame.draw.rect(window, colour, rect)
             pygame.draw.rect(window, (0, 0, 0), rect, 3)
             text = small_font.render(button["label"], True, (0, 0, 0))
@@ -93,7 +111,7 @@ def run_quiz():
     feedback = ""
 
     while True:
-        window.fill((200, 220, 255))
+        window.blit(quiz_bg, (0, 0)) # Background
 
         if current_index < len(questions):
             # Show question and input box
@@ -105,7 +123,7 @@ def run_quiz():
 
             # Shows feedback on answer - if its correct or wrong
             if feedback:
-                color = (0, 128, 0) if feedback == "Correct!" else (255, 0, 0)
+                color = (144, 238, 144) if feedback == "Correct!" else (255, 0, 0)
                 window.blit(small_font.render(feedback, True, color), (300, 370))
         else:
             # Quiz finished screen - shows the final score then redirects to the menu
@@ -163,7 +181,7 @@ def run_cards():
         card_rects.append(rect)
 
     while True:
-        window.fill((200, 200, 250))  # Background
+        window.blit(cards_bg, (0, 0))  # Background
 
         # Drawing the cards 
         for i, rect in enumerate(card_rects):
@@ -172,7 +190,7 @@ def run_cards():
             elif revealed[i]:
                 pygame.draw.rect(window, (255, 255, 200), rect)  # Card turns yellow if revealed
             else:
-                pygame.draw.rect(window, (255, 255, 255), rect)  # Card is white if facing down
+                window.blit(cardback_image, rect.topleft)  # Card is white if facing down
             pygame.draw.rect(window, (0, 0, 0), rect, 2)
 
             # Displays the card text if revealed or matched
@@ -183,7 +201,7 @@ def run_cards():
 
         # Shows message when all pairs are matched
         if all(matched):
-            window.blit(font.render("You matched all pairs!", True, (0, 100, 0)), (200, 420))
+            window.blit(font.render("You matched all pairs!", True, (255, 255, 255)), (200, 420))
             window.blit(small_font.render("Click anywhere to return to menu", True, (0, 0, 0)), (200, 480))
 
         pygame.display.flip()
